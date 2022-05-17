@@ -20,17 +20,20 @@ class Papier(models.Model):
         lekki=100
     gramatura=models.IntegerField(choices=Gramatura.choices)
     powlekany=models.BooleanField()
+    cena=models.IntegerField()
 class Druk(models.Model):
     class Meta:
         managed=True
     koloryCMYK=IntegerField(validators=[MinValueValidator(0),MaxValueValidator(5)])
     pelnyZadruk=models.BooleanField()
     blyszczacyLaminat=models.BooleanField()
+    cena=models.IntegerField()
 class Uchwyt(models.Model):
     class Meta:
         managed=True
     szerokosc=models.IntegerField()
     wciecieWTorbie=models.BooleanField()
+    cena=models.IntegerField()
 class RozmiarTorby(models.Model):
     class Meta:
         managed=True
@@ -48,13 +51,16 @@ class RozmiarTorby(models.Model):
     szerokosc=models.IntegerField(choices=Szerokosc.choices)
     dlugosc=models.IntegerField(choices=Dlugosc.choices)
     wysokosc=models.IntegerField(choices=Szerokosc.choices)
+    cena=models.IntegerField()
 class Torba(models.Model):
     papier=models.ForeignKey('Papier', on_delete=models.CASCADE)
     druk=models.ForeignKey('Druk', on_delete=models.CASCADE)
     uchwyt=models.ForeignKey('Uchwyt', on_delete=models.CASCADE)
     rozmiarTorby=models.ForeignKey('RozmiarTorby', on_delete=models.CASCADE)
-    
-
+    cenaTorby=models.IntegerField(default=0)
+    def save(self, *args, **kwargs):
+        self.cenaTorby = self.papier.cena + self.druk.cena+self.uchwyt.cena+self.rozmiarTorby.cena
+        super(Torba, self).save(*args, **kwargs)
 
 
 
